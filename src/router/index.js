@@ -10,13 +10,14 @@ export const constantRouterMap = [
   {path: '/login', component: _import('login/index'), hidden: true},
   {path: '/404', component: _import('404'), hidden: true},
   {
-    path: '/',
+    path: '',
     component: Layout,
-    redirect: '/dashboard',
-    name: '首页',
-    hidden: true,
+    redirect: 'dashboard',
     children: [{
-      path: 'dashboard', component: _import('dashboard/index')
+      path: 'dashboard',
+      component: _import('dashboard/index'),
+      name: 'dashboard',
+      meta: { title: '首页', icon: 'tree' }
     }]
   }
 ]
@@ -38,26 +39,30 @@ export const asyncRouterMap = [
         name: '文章',
         component: _import('article/article'),
         meta: {title: '文章', icon: 'example'},
-        menu: 'article'
+        menu: 'article:list'
       },
     ]
   },
   {
     path: '/user',
     component: Layout,
-    redirect: '/user/',
+    redirect: '/user',
     name: '',
     meta: {title: '用户权限', icon: 'table'},
     children: [
       {
-        path: '', name: '用户列表', component: _import('user/user'), meta: {title: '用户列表', icon: 'user'}, menu: 'user'
+        path: '',
+        name: '用户列表',
+        component: _import('user/user'),
+        meta: {title: '用户列表', icon: 'user'},
+        menu: 'user:list'
       },
       {
         path: 'role',
         name: '权限管理',
         component: _import('user/role'),
         meta: {title: '权限管理', icon: 'password'},
-        menu: 'role'
+        menu: 'role:list'
       },
     ]
   },

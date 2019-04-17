@@ -19,7 +19,7 @@
       <el-table-column align="center" label="用户">
         <template slot-scope="scope">
           <div v-for="user in scope.row.users">
-            <div v-text="user.nickname" style="display: inline-block;vertical-align: middle;"></div>
+            <div v-text="user.username" style="display: inline-block;vertical-align: middle;"></div>
           </div>
         </template>
       </el-table-column>

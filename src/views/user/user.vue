@@ -15,7 +15,7 @@
           <span v-text="getIndex(scope.$index)"> </span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="昵称" prop="nickname" style="width: 60px;"></el-table-column>
+      <el-table-column align="center" label="昵称" prop="username" style="width: 60px;"></el-table-column>
       <el-table-column align="center" label="用户名" prop="username" style="width: 60px;"></el-table-column>
       <el-table-column align="center" label="角色" width="100">
         <template slot-scope="scope">
@@ -69,7 +69,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="昵称" required>
-          <el-input type="text" v-model="tempUser.nickname">
+          <el-input type="text" v-model="tempUser.username">
           </el-input>
         </el-form-item>
       </el-form>
@@ -104,7 +104,6 @@
         tempUser: {
           username: '',
           password: '',
-          nickname: '',
           roleId: '',
           userId: ''
         }
@@ -166,7 +165,6 @@
         //显示新增对话框
         this.tempUser.username = "";
         this.tempUser.password = "";
-        this.tempUser.nickname = "";
         this.tempUser.roleId = "";
         this.tempUser.userId = "";
         this.dialogStatus = "create"
@@ -175,7 +173,6 @@
       showUpdate($index) {
         let user = this.list[$index];
         this.tempUser.username = user.username;
-        this.tempUser.nickname = user.nickname;
         this.tempUser.roleId = user.roleId;
         this.tempUser.userId = user.userId;
         this.tempUser.deleteStatus = '1';
