@@ -3,22 +3,27 @@
     <div class="filter-container">
       <el-form style="float:right">
         <el-form-item>
-          <el-button type="primary" icon="plus" v-if="hasPerm('role:add')" @click="showCreate">添加
-          </el-button>
+          <!--<el-button type="primary" size="mini" icon="plus" v-if="hasPerm('role:add')" @click="showCreate">添加-->
+          <!--</el-button>-->
         </el-form-item>
       </el-form>
     </div>
-    <el-table :data="list" v-loading.body="listLoading" element-loading-text="拼命加载中" border fit
+    <el-table :stripe="true" :data="list" v-loading.body="listLoading" element-loading-text="拼命加载中" border fit
               highlight-current-row>
       <el-table-column align="center" label="序号" width="80">
         <template slot-scope="scope">
           <span v-text="getIndex(scope.$index)"> </span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="角色名" prop="roleName" ></el-table-column>
-      <el-table-column align="center" label="管理" width="220" v-if="hasPerm('role:update')">
+      <el-table-column align="center" label="用户名" prop="username" ></el-table-column>
+      <el-table-column align="center" label="昵称" prop="nickname" ></el-table-column>
+      <el-table-column align="center" label="动作" prop="operation" ></el-table-column>
+      <el-table-column align="center" label="API" prop="uri" ></el-table-column>
+      <el-table-column align="center" label="参数" prop="params" ></el-table-column>
+      <el-table-column align="center" label="IP" prop="ip" ></el-table-column>
+      <el-table-column align="center" label="操作时间" >
         <template slot-scope="scope">
-          <el-button type="primary" icon="edit" @click="showUpdate(scope.$index)">修改</el-button>
+          {{parseTime(scope.row.createTime)}}
         </template>
       </el-table-column>
     </el-table>
@@ -62,7 +67,7 @@
         listLoading: false,//数据加载等待动画
         listQuery: {
           pageNum: 1,//页码
-          pageSize: 20,//每页条数
+          pageSize: 10,//每页条数
         },
         roles: [],//角色列表
         dialogStatus: 'create',
@@ -88,7 +93,7 @@
         //查询列表
         this.listLoading = true;
         this.api({
-          url: "/auth/role/list",
+          url: "/system/log/list",
           method: "post",
           params: this.listQuery
         }).then(data => {

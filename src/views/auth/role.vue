@@ -3,30 +3,22 @@
     <div class="filter-container">
       <el-form style="float:right">
         <el-form-item>
-          <el-button type="primary" icon="plus" v-if="hasPerm('user:add')" @click="showCreate">添加
+          <el-button type="primary" size="mini" icon="plus" v-if="hasPerm('role:add')" @click="showCreate">添加
           </el-button>
         </el-form-item>
       </el-form>
     </div>
-    <el-table :data="list" v-loading.body="listLoading" element-loading-text="拼命加载中" border fit
+    <el-table :stripe="true" :data="list" v-loading.body="listLoading" element-loading-text="拼命加载中" border fit
               highlight-current-row>
       <el-table-column align="center" label="序号" width="80">
         <template slot-scope="scope">
           <span v-text="getIndex(scope.$index)"> </span>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="昵称" prop="nickname" ></el-table-column>
-      <el-table-column align="center" label="用户名" prop="username" ></el-table-column>
-      <el-table-column align="center" label="角色">
+      <el-table-column align="center" label="角色名" prop="roleName" ></el-table-column>
+      <el-table-column align="center" label="管理" width="220" v-if="hasPerm('role:update')">
         <template slot-scope="scope">
-          <el-tag type="success" v-if="scope.row.roles.length>0" v-text="scope.row.roles.join(',')"></el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="管理" width="220" v-if="hasPerm('user:update')">
-        <template slot-scope="scope">
-          <el-button type="primary" icon="edit" @click="showUpdate(scope.$index)">修改</el-button>
-          <el-button type="danger" icon="delete" v-if="scope.row.id!==1" @click="removeUser(scope.$index)">删除
-          </el-button>
+          <el-button type="primary" size="mini" icon="edit" @click="showUpdate(scope.$index)">修改</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -40,29 +32,21 @@
       layout="total, sizes, prev, pager, next, jumper">
     </el-pagination>
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
-      <el-form class="small-space" :model="tempUser" label-position="left" label-width="80px"
+      <el-form class="small-space" :model="tempRole" label-position="left" label-width="80px"
                style='width: 300px; margin-left:50px;'>
-        <el-form-item label="用户名" required v-if="dialogStatus=='create'">
-          <el-input type="text" v-model="tempUser.username">
+        <el-form-item label="角色名" required>
+          <el-input type="text" v-model="tempRole.roleName">
           </el-input>
         </el-form-item>
-        <el-form-item label="密码" v-if="dialogStatus=='create'" required>
-          <el-input type="password" v-model="tempUser.password">
-          </el-input>
-        </el-form-item>
-        <el-form-item label="新密码" v-else>
-          <el-input type="password" v-model="tempUser.password" placeholder="不填则表示不修改">
-          </el-input>
-        </el-form-item>
-        <el-form-item label="昵称" required>
-          <el-input type="text" v-model="tempUser.nickname">
+        <el-form-item label="备注" >
+          <el-input type="textarea" v-model="tempRole.remark">
           </el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button v-if="dialogStatus=='create'" type="success" @click="createUser">创 建</el-button>
-        <el-button type="primary" v-else @click="updateUser">修 改</el-button>
+        <el-button v-if="dialogStatus=='create'" type="success" @click="createRole">创 建</el-button>
+        <el-button type="primary" v-else @click="updateRole">修 改</el-button>
       </div>
     </el-dialog>
   </div>
@@ -85,40 +69,26 @@
         dialogFormVisible: false,
         textMap: {
           update: '编辑',
-          create: '新建用户'
+          create: '新建角色'
         },
-        tempUser: {
-          username: '',
-          password: '',
-          id: ''
+        tempRole: {
+          id: '',
+          roleName: '',
+          remark:''
         }
       }
     },
     created() {
       this.getList();
-      if (this.hasPerm('user:add') || this.hasPerm('user:update')) {
-        this.getAllRoles();
-      }
     },
     computed: {
-      ...mapGetters([
-        'id'
-      ])
     },
     methods: {
-      getAllRoles() {
-        this.api({
-          url: "/auth/role/all",
-          method: "post"
-        }).then(data => {
-          this.roles = data;
-        })
-      },
       getList() {
         //查询列表
         this.listLoading = true;
         this.api({
-          url: "/auth/user/list",
+          url: "/auth/role/list",
           method: "post",
           params: this.listQuery
         }).then(data => {
@@ -148,36 +118,35 @@
       },
       showCreate() {
         //显示新增对话框
-        this.tempUser.username = "";
-        this.tempUser.password = "";
-        this.tempUser.id= "";
+        this.tempRole.roleName = "";
+        this.tempRole.remark = "";
+        this.tempRole.id= "";
         this.dialogStatus = "create";
         this.dialogFormVisible = true
       },
       showUpdate($index) {
-        this.tempUser = this.list[$index];
-        this.tempUser.password = '';
+        this.tempRole = this.list[$index];
         this.dialogStatus = "update";
         this.dialogFormVisible = true
       },
-      createUser() {
-        //添加新用户
+      createRole() {
+        //添加新角色
         this.api({
-          url: "/auth/user/add",
+          url: "/auth/role/add",
           method: "post",
-          data: this.tempUser
+          data: this.tempRole
         }).then(() => {
           this.getList();
           this.dialogFormVisible = false
         })
       },
-      updateUser() {
-        //修改用户信息
+      updateRole() {
+        //修改角色信息
         let _vue = this;
         this.api({
-          url: "/auth/user/update",
+          url: "/auth/role/update",
           method: "post",
-          data: this.tempUser
+          data: this.tempRole
         }).then(() => {
           this.dialogFormVisible = false
           this.$message({
@@ -187,30 +156,6 @@
             onClose: () => {
               _vue.getList();
             }
-          })
-        })
-      },
-      removeUser($index) {
-        let _vue = this;
-        this.$confirm('确定删除此用户?', '提示', {
-          confirmButtonText: '确定',
-          showCancelButton: false,
-          type: 'warning'
-        }).then(() => {
-          let user = _vue.list[$index];
-          _vue.api({
-            url: "/auth/user/delete",
-            method: "post",
-            params: {id:user.id}
-          }).then(() => {
-            this.$message({
-              message: '删除成功',
-              type: 'success',
-              duration: 1 * 1000,
-            })
-            _vue.getList()
-          }).catch(() => {
-            _vue.$message.error("删除失败")
           })
         })
       },

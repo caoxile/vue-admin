@@ -37,23 +37,23 @@ export const asyncRouterMap = [
       {
         path: 'user',
         name: '用户管理',
-        component: _import('user/user'),
+        component: _import('auth/user'),
         meta: {title: '用户列表', icon: 'user'},
         menu: 'user:list'
       },
       {
         path: 'role',
         name: '角色管理',
-        component: _import('user/role'),
+        component: _import('auth/role'),
         meta: {title: '角色管理', icon: 'role'},
         menu: 'role:list'
       },
       {
         path: 'auth',
         name: '权限管理',
-        component: _import('user/auth'),
+        component: _import('auth/permission'),
         meta: {title: '权限管理', icon: 'password'},
-        menu: 'auth:list'
+        menu: 'permission:list'
       },
     ]
   },
@@ -67,14 +67,14 @@ export const asyncRouterMap = [
       {
         path: 'log',
         name: '操作日志',
-        component: _import('user/user'),
+        component: _import('system/log'),
         meta: {title: '操作日志', icon: 'log'},
         menu: 'system:log'
       },
       {
         path: 'online',
         name: '在线用户',
-        component: _import('user/role'),
+        component: _import('auth/role'),
         meta: {title: '在线用户', icon: 'online'},
         menu: 'system:online'
       },
