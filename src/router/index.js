@@ -17,7 +17,7 @@ export const constantRouterMap = [
       path: 'dashboard',
       component: _import('dashboard/index'),
       name: 'dashboard',
-      meta: { title: '首页', icon: 'tree' }
+      meta: { title: '首页', icon: 'home' }
     }]
   }
 ]
@@ -28,41 +28,55 @@ export default new Router({
 })
 export const asyncRouterMap = [
   {
-    path: '/system',
+    path: '/auth',
     component: Layout,
-    redirect: '/system/article',
-    name: '功能模块',
-    meta: {title: '功能模块', icon: 'tree'},
-    children: [
-      {
-        path: 'article',
-        name: '文章',
-        component: _import('article/article'),
-        meta: {title: '文章', icon: 'example'},
-        menu: 'article:list'
-      },
-    ]
-  },
-  {
-    path: '/user',
-    component: Layout,
-    redirect: '/user',
+    redirect: '/auth',
     name: '',
     meta: {title: '用户权限', icon: 'table'},
     children: [
       {
-        path: '',
-        name: '用户列表',
+        path: 'user',
+        name: '用户管理',
         component: _import('user/user'),
         meta: {title: '用户列表', icon: 'user'},
         menu: 'user:list'
       },
       {
         path: 'role',
-        name: '权限管理',
+        name: '角色管理',
         component: _import('user/role'),
-        meta: {title: '权限管理', icon: 'password'},
+        meta: {title: '角色管理', icon: 'role'},
         menu: 'role:list'
+      },
+      {
+        path: 'auth',
+        name: '权限管理',
+        component: _import('user/auth'),
+        meta: {title: '权限管理', icon: 'password'},
+        menu: 'auth:list'
+      },
+    ]
+  },
+  {
+    path: '/system',
+    component: Layout,
+    redirect: '/system',
+    name: '',
+    meta: {title: '系统管理', icon: 'system'},
+    children: [
+      {
+        path: 'log',
+        name: '操作日志',
+        component: _import('user/user'),
+        meta: {title: '操作日志', icon: 'log'},
+        menu: 'system:log'
+      },
+      {
+        path: 'online',
+        name: '在线用户',
+        component: _import('user/role'),
+        meta: {title: '在线用户', icon: 'online'},
+        menu: 'system:online'
       },
     ]
   },

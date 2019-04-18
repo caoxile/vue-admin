@@ -54,7 +54,6 @@ const permission = {
       //生成路由
       return new Promise(resolve => {
         let accessedRouters = filterAsyncRouter(asyncRouterMap, userPermission)
-        console.log(accessedRouters);
         //执行设置路由的方法
         commit('SET_ROUTERS', accessedRouters)
         resolve()

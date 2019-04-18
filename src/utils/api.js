@@ -20,7 +20,7 @@ service.interceptors.response.use(
   response => {
     const res = response.data;
     if (res.code === 200) {
-      return res;
+      return res.data;
     } else if (res.code === 401) {
       Message({
         showClose: true,

@@ -31,7 +31,7 @@
     data() {
       return {
         loginForm: {
-          username: 'tom',
+          username: 'admin',
           password: 'hellotom'
         },
         loginRules: {
