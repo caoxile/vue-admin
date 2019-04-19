@@ -16,7 +16,7 @@
         </template>
       </el-table-column>
       <el-table-column align="center" label="角色名" prop="roleName" ></el-table-column>
-      <el-table-column align="center" label="管理" width="220" v-if="hasPerm('role:update')">
+      <el-table-column align="center" label="操作" width="220" v-if="hasPerm('role:update')">
         <template slot-scope="scope">
           <el-button type="primary" size="mini" icon="edit" @click="showUpdate(scope.$index)">修改</el-button>
         </template>

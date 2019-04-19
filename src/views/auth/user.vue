@@ -22,7 +22,7 @@
           <el-tag type="success" v-if="scope.row.roles.length>0" v-text="scope.row.roles.join(',')"></el-tag>
         </template>
       </el-table-column>
-      <el-table-column align="center" label="管理" width="220" v-if="hasPerm('user:update')">
+      <el-table-column align="center" label="操作" width="220" v-if="hasPerm('user:update')">
         <template slot-scope="scope">
           <el-button type="primary" size="mini" icon="edit" @click="showUpdate(scope.$index)">修改</el-button>
           <el-button type="danger" size="mini" icon="delete" v-if="scope.row.id!==1" @click="removeUser(scope.$index)">删除
