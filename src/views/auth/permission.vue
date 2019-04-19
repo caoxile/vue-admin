@@ -16,14 +16,14 @@
       :is-fold="props.isFold"
       :expand-type="props.expandType"
       :selection-type="props.selectionType">
-      <template slot="operation" scope="scope">
-        <el-button size="mini" type="success" v-if="scope.row.parentId==0" @click="showCreate(scope.row)">添加</el-button>
-        <el-button size="mini" type="primary" @click="showUpdate(scope.row)">编辑</el-button>
-        <el-button size="mini" type="danger" v-if="scope.row.parentId!==0" @click="deletePermission(scope.row.id)">删除</el-button>
+      <template slot="operation" scope="scope" >
+        <el-button size="mini" type="success" v-if="scope.row.parentId==0&&hasPerm('permission:add')" @click="showCreate(scope.row)">添加</el-button>
+        <el-button size="mini" type="primary" v-if="hasPerm('permission:update')" @click="showUpdate(scope.row)">编辑</el-button>
+        <el-button size="mini" type="danger" v-if="scope.row.parentId!==0&&hasPerm('permission:delete')" @click="deletePermission(scope.row.id)">删除</el-button>
       </template>
     </zk-table>
     <!--新增弹框-->
-    <el-dialog :title="dialogTitle" :visible.sync="AddBox" top="5%" width="45%" center>
+    <el-dialog :title="dialogTitle" :visible.sync="dialogFormVisible" top="5%" width="45%" center>
       <el-form class="small-space" :model="record" :rules="recordRules"
                ref="recordForm" label-position="right" label-width="140px">
         <el-form-item label="权限名称" prop="permissionName" style="width: 400px">
@@ -41,7 +41,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitRecord('recordForm')">确 定</el-button>
-        <el-button @click="AddBox = false">取 消</el-button>
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
       </div>
     </el-dialog>
   </div>
@@ -51,7 +51,7 @@
   export default {
     data() {
       return {
-        AddBox:false,
+        dialogFormVisible:false,
         dialogTitle:'',
         record: {},
         recordRules: {
@@ -118,9 +118,9 @@
       },
       //新增
       showCreate(data){
-        this.dialogTitle='新增权限'
+        this.dialogTitle='新增权限';
         this.record={}
-        this.AddBox=true
+        this.dialogFormVisible=true;
         this.record.parentId=data.id
       },
       //编辑
@@ -132,7 +132,7 @@
           remark:data.remark,
           id:data.id
         }
-        this.AddBox=true
+        this.dialogFormVisible=true
       },
       //删除
       deletePermission(id){
@@ -164,7 +164,7 @@
                 method: "post",
                 data:this.record
               }).then(() => {
-                this.AddBox = false;
+                this.dialogFormVisible = false;
                 this.record={}
                 this.$message({
                   message: '新增成功',
@@ -178,7 +178,7 @@
                 method: "post",
                 data:this.record
               }).then(() => {
-                this.AddBox = false;
+                this.dialogFormVisible = false;
                 this.record={}
                 this.$message({
                   message: '修改成功',

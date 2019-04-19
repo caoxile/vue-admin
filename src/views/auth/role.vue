@@ -21,6 +21,11 @@
           <el-button type="primary" size="mini" icon="edit" @click="showUpdate(scope.$index)">修改</el-button>
         </template>
       </el-table-column>
+      <el-table-column align="center" label="分配权限" width="220" v-if="hasPerm('role:assign-permission')">
+        <template slot-scope="scope">
+          <el-button type="warning" size="mini" icon="edit" @click="showAssignPermission(scope.$index)">分配</el-button>
+        </template>
+      </el-table-column>
     </el-table>
     <el-pagination
       @size-change="handleSizeChange"
@@ -49,6 +54,20 @@
         <el-button type="primary" v-else @click="updateRole">修 改</el-button>
       </div>
     </el-dialog>
+    <!--权限弹框-->
+    <el-dialog :title="selectRole.roleName+'|权限设置'" :visible.sync="permissionFormVisible" top="5%" width="45%" center>
+      <el-tree
+        :data="permissions"
+        :show-checkbox="true"
+        :default-expand-all="true"
+        :check-strictly="true"
+        node-key="id"
+        :default-checked-keys="selectRolePermissionIds"
+        :props="defaultProps"
+        @check-change="everyChange"
+        @check="permissionChange">
+      </el-tree>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -64,7 +83,6 @@
           pageNum: 1,//页码
           pageSize: 20,//每页条数
         },
-        roles: [],//角色列表
         dialogStatus: 'create',
         dialogFormVisible: false,
         textMap: {
@@ -75,7 +93,16 @@
           id: '',
           roleName: '',
           remark:''
-        }
+        },
+        permissions: [],//权限列表
+        permissionFormVisible:false,
+        selectRole:{},
+        selectRolePermissionIds:[],
+        defaultProps: {
+          children: 'children',
+          label: 'permissionName'
+        },
+        ifChecked:false,
       }
     },
     created() {
@@ -94,7 +121,7 @@
         }).then(data => {
           this.listLoading = false;
           this.list = data.list;
-          this.totalCount = data.size;
+          this.totalCount = data.total;
         })
       },
       handleSizeChange(val) {
@@ -158,6 +185,52 @@
             }
           })
         })
+      },
+      getAllPermissions() {
+        this.api({
+          url: "/auth/permission/tree",
+          method: "post"
+        }).then(data => {
+          this.permissions = data;
+        })
+      },
+      showAssignPermission($index){
+        this.permissionFormVisible = true;
+        this.selectRole = this.list[$index];
+        this.api({
+          url: "/auth/permission/permissionsbyrole",
+          method: "post",
+          params: {roleId:this.selectRole.id}
+        }).then(res => {
+          this.selectRolePermissionIds = res.map(function(item){
+            return item.id;
+          })
+          this.getAllPermissions();
+        })
+      },
+      everyChange(data,checked){
+        this.ifChecked=checked
+      },
+      permissionChange(permission,checked){
+        if(this.ifChecked){
+          this.api({
+            url: "/auth/role/addpermission",
+            method: "post",
+            data: {roleId:this.selectRole.id,permissionId:permission.id}
+          }).then(res => {
+            // 添加角色成功
+            this.getList();
+          })
+        }else{
+          this.api({
+            url: "/auth/role/deletepermission",
+            method: "post",
+            data: {roleId:this.selectRole.id,permissionId:permission.id}
+          }).then(res => {
+            // 删除角色成功
+            this.getList();
+          })
+        }
       },
     }
   }

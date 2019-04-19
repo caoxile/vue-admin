@@ -99,7 +99,7 @@
         }).then(data => {
           this.listLoading = false;
           this.list = data.list;
-          this.totalCount = data.size;
+          this.totalCount = data.total;
         })
       },
       handleSizeChange(val) {

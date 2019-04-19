@@ -29,6 +29,11 @@
           </el-button>
         </template>
       </el-table-column>
+      <el-table-column align="center" label="分配角色" width="220" v-if="hasPerm('user:assign-role')">
+        <template slot-scope="scope">
+          <el-button type="warning" size="mini" icon="edit" @click="showAssignRole(scope.$index)">分配</el-button>
+        </template>
+      </el-table-column>
     </el-table>
     <el-pagination
       @size-change="handleSizeChange"
@@ -65,6 +70,19 @@
         <el-button type="primary" v-else @click="updateUser">修 改</el-button>
       </div>
     </el-dialog>
+    <el-dialog title="角色" :visible.sync="roleFormVisible" top="5%" width="45%" center>
+      <el-tree
+        :data="roles"
+        :show-checkbox="true"
+        :default-expand-all="true"
+        :check-strictly="true"
+        node-key="id"
+        :default-checked-keys="selectUserRoleIds"
+        :props="defaultProps"
+        @check-change="everyChange"
+        @check="roleChange">
+      </el-tree>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -80,7 +98,6 @@
           pageNum: 1,//页码
           pageSize: 20,//每页条数
         },
-        roles: [],//角色列表
         dialogStatus: 'create',
         dialogFormVisible: false,
         textMap: {
@@ -91,14 +108,20 @@
           username: '',
           password: '',
           id: ''
-        }
+        },
+        roles: [],//角色列表
+        roleFormVisible:false,
+        selectUser:{},
+        selectUserRoleIds:[],
+        defaultProps: {
+          children: 'children',
+          label: 'roleName'
+        },
+        ifChecked:false,
       }
     },
     created() {
       this.getList();
-      if (this.hasPerm('user:add') || this.hasPerm('user:update')) {
-        this.getAllRoles();
-      }
     },
     computed: {
       ...mapGetters([
@@ -106,14 +129,6 @@
       ])
     },
     methods: {
-      getAllRoles() {
-        this.api({
-          url: "/auth/role/all",
-          method: "post"
-        }).then(data => {
-          this.roles = data;
-        })
-      },
       getList() {
         //查询列表
         this.listLoading = true;
@@ -124,7 +139,7 @@
         }).then(data => {
           this.listLoading = false;
           this.list = data.list;
-          this.totalCount = data.size;
+          this.totalCount = data.total;
         })
       },
       handleSizeChange(val) {
@@ -213,6 +228,52 @@
             _vue.$message.error("删除失败")
           })
         })
+      },
+      getAllRoles() {
+        this.api({
+          url: "/auth/role/all",
+          method: "post"
+        }).then(data => {
+          this.roles = data;
+        })
+      },
+      showAssignRole($index){
+        this.roleFormVisible = true;
+        this.selectUser = this.list[$index];
+        this.api({
+          url: "/auth/role/rolesbyuser",
+          method: "post",
+          params: {userId:this.selectUser.id}
+        }).then(res => {
+          this.selectUserRoleIds = res.map(function(item){
+            return item.id;
+          })
+          this.getAllRoles();
+        })
+      },
+      everyChange(data,checked){
+        this.ifChecked=checked
+      },
+      roleChange(role,checked){
+        if(this.ifChecked){
+          this.api({
+            url: "/auth/user/addrole",
+            method: "post",
+            data: {userId:this.selectUser.id,roleId:role.id}
+          }).then(res => {
+            // 添加角色成功
+            this.getList();
+          })
+        }else{
+          this.api({
+            url: "/auth/user/deleterole",
+            method: "post",
+            data: {userId:this.selectUser.id,roleId:role.id}
+          }).then(res => {
+            // 删除角色成功
+            this.getList();
+          })
+        }
       },
     }
   }
