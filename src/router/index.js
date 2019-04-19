@@ -69,14 +69,14 @@ export const asyncRouterMap = [
         name: '操作日志',
         component: _import('system/log'),
         meta: {title: '操作日志', icon: 'log'},
-        menu: 'system:log'
+        menu: 'system:log-list'
       },
       {
-        path: 'online',
+        path: 'session',
         name: '在线用户',
-        component: _import('auth/role'),
+        component: _import('system/session'),
         meta: {title: '在线用户', icon: 'online'},
-        menu: 'system:online'
+        menu: 'system:session-list'
       },
     ]
   },
