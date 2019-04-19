@@ -3,6 +3,7 @@ import {Message, MessageBox} from 'element-ui'
 import {getToken} from '@/utils/auth'
 import store from '../store'
 // 创建axios实例
+axios.defaults.withCredentials = true;
 const service = axios.create({
   baseURL: process.env.BASE_URL, // api的base_url
   timeout: 15000                  // 请求超时时间2
