@@ -27,7 +27,7 @@
       </el-table-column>
       <el-table-column align="center" label="操作" width="220" v-if="hasPerm('system:session-kickout')">
         <template slot-scope="scope">
-          <el-button type="warning" size="mini" icon="plus" v-if="hasPerm('system:session-kickout')" @click="kickout">下线</el-button>
+          <el-button type="warning" size="mini" icon="plus" v-if="hasPerm('system:session-kickout')" @click="kickout(scope.row.id)">下线</el-button>
         </template>
       </el-table-column>
     </el-table>
